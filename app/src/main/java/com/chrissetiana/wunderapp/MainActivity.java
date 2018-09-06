@@ -1,16 +1,25 @@
 package com.chrissetiana.wunderapp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.AsyncTaskLoader;
+import android.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderCallbacks<String> {
 
+    private static final String SOURCE = "https://s3-us-west-2.amazonaws.com/wunderbucket/locations.json";
+    private static final int LOADER_ID = 1;
     ListView listCars;
     TextView textEmpty;
     View progressBar;
@@ -28,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         assert connectivityManager != null;
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        if(networkInfo != null && networkInfo.isConnected()) {
+        if (networkInfo != null && networkInfo.isConnected()) {
             loadQuery();
         } else {
             listCars.setVisibility(View.INVISIBLE);
@@ -40,6 +49,26 @@ public class MainActivity extends AppCompatActivity {
     private void loadQuery() {
         listCars.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
-        textEmpty.setText("Connected.");
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    @Override
+    public Loader<String> onCreateLoader(int i, final Bundle bundle) {
+        return new AsyncTaskLoader<String>(this) {
+            @Override
+            public String loadInBackground() {
+                return null;
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<String> loader, String s) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<String> loader) {
+
     }
 }
