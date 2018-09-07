@@ -1,40 +1,61 @@
 package com.chrissetiana.wunderapp;
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-class CarAdapter extends ArrayAdapter<CarActivity> {
+class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
 
-    CarAdapter(Activity context, ArrayList<CarActivity> list) {
-        super(context, 0, list);
+    private List<CarActivity> cars;
+
+    CarAdapter() {
+        cars = new ArrayList<>();
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View view = convertView;
+    public CarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Context context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_2, parent, false);
 
-        if (view == null) {
-            view = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_list_item_2, parent, false);
+        return new CarViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull CarViewHolder holder, int position) {
+        CarActivity car = cars.get(position);
+        holder.bind(car);
+    }
+
+    @Override
+    public int getItemCount() {
+        return cars.size();
+    }
+
+    public void setData(List<CarActivity> data) {
+        this.cars = data;
+    }
+
+    class CarViewHolder extends RecyclerView.ViewHolder {
+        TextView name;
+        TextView address;
+
+        CarViewHolder(View view) {
+            super(view);
+            name = view.findViewById(android.R.id.text1);
+            address = view.findViewById(android.R.id.text2);
         }
 
-        CarActivity current = getItem(position);
-        assert current != null;
-
-        TextView name = view.findViewById(android.R.id.text1);
-        name.setText(current.getName());
-
-        TextView address = view.findViewById(android.R.id.text2);
-        address.setText(current.getAddress());
-
-        return view;
+        void bind(CarActivity position) {
+            name.setText(position.getName());
+            address.setText(position.getAddress());
+        }
     }
 }

@@ -10,12 +10,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<CarActivity>> {
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     private static final String KEY = "query";
     private static final int LOADER_ID = 1;
     CarAdapter adapter;
-    ListView listCars;
+    RecyclerView listCars;
     TextView textEmpty;
     View progressBar;
 
@@ -36,17 +36,18 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         listCars = findViewById(R.id.list_cars);
         textEmpty = findViewById(R.id.text_empty);
         progressBar = findViewById(R.id.progress_bar);
-        adapter = new CarAdapter(this, new ArrayList<CarActivity>());
+        adapter = new CarAdapter();
 
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        listCars.setLayoutManager(layoutManager);
+        listCars.setHasFixedSize(false);
         listCars.setAdapter(adapter);
-        listCars.setEmptyView(textEmpty);
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         assert connectivityManager != null;
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         if (networkInfo != null && networkInfo.isConnected()) {
-            adapter.clear();
             loadQuery();
         } else {
             listCars.setVisibility(View.INVISIBLE);
@@ -56,9 +57,6 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     }
 
     private void loadQuery() {
-        listCars.setVisibility(View.INVISIBLE);
-        progressBar.setVisibility(View.INVISIBLE);
-
         Bundle bundle = new Bundle();
         bundle.putString(KEY, SOURCE);
 
@@ -110,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         } else {
             listCars.setVisibility(View.VISIBLE);
             textEmpty.setVisibility(View.INVISIBLE);
-            adapter.addAll(data);
+            adapter.setData(data);
+            adapter.notifyDataSetChanged();
         }
     }
 
