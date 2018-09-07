@@ -15,7 +15,10 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements LoaderCallbacks<String> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<CarActivity>> {
 
     private static final String SOURCE = "https://s3-us-west-2.amazonaws.com/wunderbucket/locations.json";
     private static final String KEY = "query";
@@ -33,12 +36,17 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<S
         listCars = findViewById(R.id.list_cars);
         textEmpty = findViewById(R.id.text_empty);
         progressBar = findViewById(R.id.progress_bar);
+        adapter = new CarAdapter(this, new ArrayList<CarActivity>());
+
+        listCars.setAdapter(adapter);
+        listCars.setEmptyView(textEmpty);
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         assert connectivityManager != null;
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         if (networkInfo != null && networkInfo.isConnected()) {
+            adapter.clear();
             loadQuery();
         } else {
             listCars.setVisibility(View.INVISIBLE);
@@ -66,8 +74,8 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<S
 
     @SuppressLint("StaticFieldLeak")
     @Override
-    public Loader<String> onCreateLoader(int i, final Bundle bundle) {
-        return new AsyncTaskLoader<String>(this) {
+    public Loader<List<CarActivity>> onCreateLoader(int i, final Bundle bundle) {
+        return new AsyncTaskLoader<List<CarActivity>>(this) {
             @Override
             protected void onStartLoading() {
                 if (bundle == null) {
@@ -80,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<S
             }
 
             @Override
-            public String loadInBackground() {
+            public List<CarActivity> loadInBackground() {
                 String source = bundle.getString(KEY);
                 if (TextUtils.isEmpty(source)) {
                     return null;
@@ -92,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<S
     }
 
     @Override
-    public void onLoadFinished(Loader<String> loader, String data) {
+    public void onLoadFinished(Loader<List<CarActivity>> loader, List<CarActivity> data) {
         progressBar.setVisibility(View.INVISIBLE);
 
         if (data == null) {
@@ -107,6 +115,6 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<S
     }
 
     @Override
-    public void onLoaderReset(Loader<String> loader) {
+    public void onLoaderReset(Loader<List<CarActivity>> loader) {
     }
 }
