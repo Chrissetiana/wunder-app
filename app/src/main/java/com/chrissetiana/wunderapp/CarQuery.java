@@ -113,15 +113,24 @@ public class CarQuery {
             JSONArray placemarks = object.getJSONArray("placemarks");
 
             int len = placemarks.length();
-            Log.d("Query", "No. of places: " + len);
             for (int i = 0; i < len; i++) {
                 JSONObject property = placemarks.getJSONObject(i);
                 String name = property.optString("name");
+                String vin = property.optString("vin");
+                String engine = property.optString("engineType");
+                String fuel = property.optString("fuel");
+                String exterior = property.optString("exterior");
+                String interior = property.optString("interior");
                 String address = property.optString("address");
 
-//                Log.d("Query", "Details: " + name + ", " + address);
+                List<String> coordinates = new ArrayList<>();
+                JSONArray coord = property.getJSONArray("coordinates");
+                int arrLen = coord.length();
+                for (int j = 0; j < arrLen; j++) {
+                    coordinates.add(coord.optString(j));
+                }
 
-                CarActivity car = new CarActivity(name, address);
+                CarActivity car = new CarActivity(name, vin, engine, fuel, exterior, interior, address, coordinates);
                 cars.add(car);
             }
         } catch (JSONException e) {
