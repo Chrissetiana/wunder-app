@@ -67,10 +67,10 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
             textEmpty.setText(getString(R.string.no_conn));
         }
 
-        if (isPlayAvailable()) {
+//        if (isPlayAvailable()) {
 //            setContentView(R.layout.activity_map);
-            loadMap();
-        }
+//            loadMap();
+//        }
     }
 
     private void loadQuery() {
@@ -136,7 +136,9 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
-
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.activity_detail);
+        dialog.show();
     }
 
     public boolean isPlayAvailable() {
@@ -161,12 +163,12 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        loadLocation(9.1329, 7.3875945); // add the car location here
+        loadLocation(9.1329, 7.3875945, 0); // add the car location here
     }
 
-    private void loadLocation(double lat, double lon) {
+    private void loadLocation(double lat, double lon, float zoom) {
         LatLng loc = new LatLng(lat, lon);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(loc, 10);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(loc, zoom);
         map.moveCamera(cameraUpdate);
     }
 }

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -49,7 +50,7 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
         void onListItemClick(int clickedItemIndex);
     }
 
-    class CarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class CarViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
         TextView name;
         TextView address;
 
@@ -57,6 +58,7 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
             super(view);
             name = view.findViewById(android.R.id.text1);
             address = view.findViewById(android.R.id.text2);
+            view.setOnClickListener(this);
         }
 
         void bind(CarActivity position) {

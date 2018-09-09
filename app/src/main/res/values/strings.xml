@@ -3,4 +3,22 @@
 
     <string name="no_data">No data found</string>
     <string name="no_conn">No internet connection</string>
+
+    <string name="label_name">name</string>
+    <string name="label_vin">vin</string>
+    <string name="label_engine">engine</string>
+    <string name="label_fuel">fuel</string>
+    <string name="label_exterior">exterior</string>
+    <string name="label_interior">interior</string>
+    <string name="label_address">address</string>
+    <string name="label_coordinates">coordinates</string>
+
+    <string name="sample_name">HH-GO8522</string>
+    <string name="sample_vin">WME4513341K565439</string>
+    <string name="sample_engine">CE</string>
+    <string name="sample_fuel">42</string>
+    <string name="sample_exterior">UNACCEPTABLE</string>
+    <string name="sample_interior">UNACCEPTABLE</string>
+    <string name="sample_address">Lesserstraße 170, 22049 Hamburg</string>
+    <string name="sample_coordinates">10.07526, 53.59301, 0</string>
 </resources>
