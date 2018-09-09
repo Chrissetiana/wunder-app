@@ -13,10 +13,12 @@ import java.util.List;
 
 class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
 
+    private final ListItemClickListener listener;
     private List<CarActivity> cars;
 
-    CarAdapter() {
+    CarAdapter(ListItemClickListener clickListener) {
         cars = new ArrayList<>();
+        listener = clickListener;
     }
 
     @NonNull
@@ -43,7 +45,11 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
         this.cars = data;
     }
 
-    class CarViewHolder extends RecyclerView.ViewHolder {
+    public interface ListItemClickListener {
+        void onListItemClick(int clickedItemIndex);
+    }
+
+    class CarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView name;
         TextView address;
 
@@ -56,6 +62,12 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
         void bind(CarActivity position) {
             name.setText(position.getName());
             address.setText(position.getAddress());
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+            listener.onListItemClick(position);
         }
     }
 }

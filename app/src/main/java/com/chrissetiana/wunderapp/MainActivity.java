@@ -29,7 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<CarActivity>>, OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<CarActivity>>, CarAdapter.ListItemClickListener, OnMapReadyCallback {
 
     private static final String SOURCE = "https://s3-us-west-2.amazonaws.com/wunderbucket/locations.json";
     private static final String KEY = "query";
@@ -43,32 +43,32 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//         setContentView(R.layout.activity_main);
-//
-//        listCars = findViewById(R.id.list_cars);
-//        textEmpty = findViewById(R.id.text_empty);
-//        progressBar = findViewById(R.id.progress_bar);
-//        adapter = new CarAdapter();
-//
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-//        listCars.setLayoutManager(layoutManager);
-//        listCars.setHasFixedSize(false);
-//        listCars.setAdapter(adapter);
-//
-//        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//        assert connectivityManager != null;
-//        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-//
-//        if (networkInfo != null && networkInfo.isConnected()) {
-//            loadQuery();
-//        } else {
-//            listCars.setVisibility(View.INVISIBLE);
-//            progressBar.setVisibility(View.INVISIBLE);
-//            textEmpty.setText(getString(R.string.no_conn));
-//        }
+        setContentView(R.layout.activity_main);
+
+        listCars = findViewById(R.id.list_cars);
+        textEmpty = findViewById(R.id.text_empty);
+        progressBar = findViewById(R.id.progress_bar);
+        adapter = new CarAdapter(this);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        listCars.setLayoutManager(layoutManager);
+        listCars.setHasFixedSize(false);
+        listCars.setAdapter(adapter);
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert connectivityManager != null;
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+            loadQuery();
+        } else {
+            listCars.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.INVISIBLE);
+            textEmpty.setText(getString(R.string.no_conn));
+        }
 
         if (isPlayAvailable()) {
-            setContentView(R.layout.activity_map);
+//            setContentView(R.layout.activity_map);
             loadMap();
         }
     }
@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
             loaderManager.restartLoader(LOADER_ID, bundle, this);
         }
     }
+
     @SuppressLint("StaticFieldLeak")
     @Override
     public Loader<List<CarActivity>> onCreateLoader(int i, final Bundle bundle) {
@@ -133,6 +134,11 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     public void onLoaderReset(Loader<List<CarActivity>> loader) {
     }
 
+    @Override
+    public void onListItemClick(int clickedItemIndex) {
+
+    }
+
     public boolean isPlayAvailable() {
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
         int available = api.isGooglePlayServicesAvailable(this);
@@ -155,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        loadLocation(9.1329,7.3875945); // add the car location here
+        loadLocation(9.1329, 7.3875945); // add the car location here
     }
 
     private void loadLocation(double lat, double lon) {
