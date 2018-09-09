@@ -10,10 +10,13 @@ import android.content.Loader;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,11 +69,6 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
             progressBar.setVisibility(View.INVISIBLE);
             textEmpty.setText(getString(R.string.no_conn));
         }
-
-//        if (isPlayAvailable()) {
-//            setContentView(R.layout.activity_map);
-//            loadMap();
-//        }
     }
 
     private void loadQuery() {
@@ -139,6 +137,30 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.activity_detail);
         dialog.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.menu_main:
+                if (isPlayAvailable()) {
+                    setContentView(R.layout.activity_map);
+                    loadMap();
+                }
+                finish();
+                return true;
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public boolean isPlayAvailable() {
