@@ -13,13 +13,13 @@
     <string name="label_address">address</string>
     <string name="label_coordinates">coordinates</string>
 
-    <string name="sample_name">HH-GO8522</string>
-    <string name="sample_vin">WME4513341K565439</string>
-    <string name="sample_engine">CE</string>
-    <string name="sample_fuel">42</string>
-    <string name="sample_exterior">UNACCEPTABLE</string>
-    <string name="sample_interior">UNACCEPTABLE</string>
-    <string name="sample_address">Lesserstraße 170, 22049 Hamburg</string>
-    <string name="sample_coordinates">10.07526, 53.59301, 0</string>
+    <string name="car_name">HH-GO8522</string>
+    <string name="car_vin">WME4513341K565439</string>
+    <string name="car_engine">CE</string>
+    <string name="car_fuel">42</string>
+    <string name="car_exterior">UNACCEPTABLE</string>
+    <string name="car_interior">UNACCEPTABLE</string>
+    <string name="car_address">Lesserstraße 170, 22049 Hamburg</string>
+    <string name="car_coordinates">10.07526, 53.59301, 0</string>
     <string name="menu_map">Map View</string>
 </resources>

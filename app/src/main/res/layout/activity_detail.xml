@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/outer"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/inner"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -22,13 +23,15 @@
             android:id="@+id/car_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sample_name" />
+            android:text="@string/car_name" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/vin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/name"
         android:orientation="horizontal">
 
         <TextView
@@ -43,13 +46,15 @@
             android:id="@+id/car_vin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sample_vin" />
+            android:text="@string/car_vin" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/engine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/vin"
         android:orientation="horizontal">
 
         <TextView
@@ -64,13 +69,15 @@
             android:id="@+id/car_engine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sample_engine" />
+            android:text="@string/car_engine" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/fuel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/engine"
         android:orientation="horizontal">
 
         <TextView
@@ -85,13 +92,15 @@
             android:id="@+id/car_fuel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sample_fuel" />
+            android:text="@string/car_fuel" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/exterior"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/fuel"
         android:orientation="horizontal">
 
         <TextView
@@ -106,13 +115,15 @@
             android:id="@+id/car_exterior"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sample_exterior" />
+            android:text="@string/car_exterior" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/interior"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/exterior"
         android:orientation="horizontal">
 
         <TextView
@@ -127,13 +138,15 @@
             android:id="@+id/car_interior"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sample_interior" />
+            android:text="@string/car_interior" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/interior"
         android:orientation="horizontal">
 
         <TextView
@@ -148,13 +161,15 @@
             android:id="@+id/car_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sample_address" />
+            android:text="@string/car_address" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/coordinates"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/address"
         android:orientation="horizontal">
 
         <TextView
@@ -169,8 +184,8 @@
             android:id="@+id/car_coordinates"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sample_coordinates" />
+            android:text="@string/car_coordinates" />
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

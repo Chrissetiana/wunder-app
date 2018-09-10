@@ -42,6 +42,10 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
         return cars.size();
     }
 
+    public List<CarActivity> getData() {
+        return cars;
+    }
+
     public void setData(List<CarActivity> data) {
         this.cars = data;
     }
