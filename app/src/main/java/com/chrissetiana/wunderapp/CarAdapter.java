@@ -26,7 +26,7 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
     @Override
     public CarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_2, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.activity_detail, parent, false);
 
         return new CarViewHolder(view);
     }
@@ -56,18 +56,36 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
 
     class CarViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
         TextView name;
+        TextView vin;
+        TextView engine;
+        TextView fuel;
+        TextView exterior;
+        TextView interior;
         TextView address;
+        TextView coordinates;
 
         CarViewHolder(View view) {
             super(view);
-            name = view.findViewById(android.R.id.text1);
-            address = view.findViewById(android.R.id.text2);
+            name = view.findViewById(R.id.car_name);
+            vin = view.findViewById(R.id.car_vin);
+            engine = view.findViewById(R.id.car_engine);
+            fuel = view.findViewById(R.id.car_fuel);
+            exterior = view.findViewById(R.id.car_exterior);
+            interior = view.findViewById(R.id.car_interior);
+            address = view.findViewById(R.id.car_address);
+            coordinates = view.findViewById(R.id.car_coordinates);
             view.setOnClickListener(this);
         }
 
         void bind(CarActivity position) {
             name.setText(position.getName());
+            vin.setText(position.getVin());
+            engine.setText(position.getEngine());
+            fuel.setText(position.getFuel());
+            exterior.setText(position.getExterior());
+            interior.setText(position.getInterior());
             address.setText(position.getAddress());
+//            coordinates.setText(position.getCoordinates());
         }
 
         @Override
