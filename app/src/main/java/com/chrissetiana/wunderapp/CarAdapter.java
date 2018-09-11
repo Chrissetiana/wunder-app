@@ -22,12 +22,19 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
         listener = clickListener;
     }
 
+    public List<CarActivity> getData() {
+        return cars;
+    }
+
+    public void setData(List<CarActivity> data) {
+        this.cars = data;
+    }
+
     @NonNull
     @Override
     public CarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.activity_detail, parent, false);
-
         return new CarViewHolder(view);
     }
 
@@ -42,19 +49,12 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
         return cars.size();
     }
 
-    public List<CarActivity> getData() {
-        return cars;
-    }
-
-    public void setData(List<CarActivity> data) {
-        this.cars = data;
-    }
-
     public interface ListItemClickListener {
         void onListItemClick(int clickedItemIndex);
     }
 
     class CarViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+
         TextView name;
         TextView vin;
         TextView engine;
@@ -66,6 +66,7 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
 
         CarViewHolder(View view) {
             super(view);
+
             name = view.findViewById(R.id.car_name);
             vin = view.findViewById(R.id.car_vin);
             engine = view.findViewById(R.id.car_engine);
@@ -74,6 +75,7 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
             interior = view.findViewById(R.id.car_interior);
             address = view.findViewById(R.id.car_address);
             coordinates = view.findViewById(R.id.car_coordinates);
+
             view.setOnClickListener(this);
         }
 
@@ -85,18 +87,7 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
             exterior.setText(position.getExterior());
             interior.setText(position.getInterior());
             address.setText(position.getAddress());
-
-            StringBuilder coord = new StringBuilder();
-            List<String> coordinate = position.getCoordinates();
-            int len = coordinate.size();
-
-            for (int i = 0; i < len; i++) {
-                if (i > 0) {
-                    coord.append(", ");
-                }
-                coord.append(coordinate.get(i));
-            }
-
+            String coord = String.valueOf(position.getLat()) + ", " + position.getLon();
             coordinates.setText(coord);
         }
 

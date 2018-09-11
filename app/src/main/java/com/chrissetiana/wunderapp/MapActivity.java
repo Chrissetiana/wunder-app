@@ -19,6 +19,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     GoogleMap map;
+    String name;
+    String address;
+    Double lat;
+    Double lon;
+    MarkerOptions options;
+
+    public MapActivity(String name, double lat, double lon, String address) {
+        this.name = name;
+        this.lat = lat;
+        this.lon = lon;
+        this.address = address;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,27 +47,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public boolean isPlayAvailable() {
         GoogleApiAvailability api = GoogleApiAvailability.getInstance();
         int available = api.isGooglePlayServicesAvailable(this);
+
         if (available == ConnectionResult.SUCCESS) {
             return true;
         } else if (api.isUserResolvableError(available)) {
-            Dialog dialog = api.getErrorDialog(this, available, 0);
+            Dialog dialog = api.getErrorDialog(this, available, 10);
             dialog.show();
         } else {
             Toast.makeText(this, "Cannot connect to play services", Toast.LENGTH_LONG).show();
         }
+
         return false;
     }
 
     private void loadMap() {
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map_cars);
         mapFragment.getMapAsync(this);
-    }
-
-    private void loadLocation(double lat, double lon, float zoom, String name) {
-        LatLng loc = new LatLng(lat, lon);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(loc, zoom);
-        map.moveCamera(cameraUpdate);
-        map.addMarker(new MarkerOptions().position(loc).title(name));
     }
 
     @Override
@@ -68,6 +75,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.getUiSettings().setRotateGesturesEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setZoomGesturesEnabled(true);
-        loadLocation(9.1329, 7.3875945, 15, "Toyota"); // add the car location and name here
+        loadLocation(lat, lon, name, address);
+
+    }
+
+    private void loadLocation(double lat, double lon, String name, String address) {
+        LatLng loc = new LatLng(lat, lon);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(loc, 10);
+        map.moveCamera(cameraUpdate);
+        options = new MarkerOptions().position(loc).title(name).snippet(address);
+        map.addMarker(options);
     }
 }

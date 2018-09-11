@@ -1,10 +1,23 @@
 package com.chrissetiana.wunderapp;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
-import java.util.List;
 
-class CarActivity extends ArrayList<CarActivity> {
+class CarActivity extends ArrayList<CarActivity> implements Parcelable {
 
+    public static final Creator<CarActivity> CREATOR = new Creator<CarActivity>() {
+        @Override
+        public CarActivity createFromParcel(Parcel in) {
+            return new CarActivity(in);
+        }
+
+        @Override
+        public CarActivity[] newArray(int size) {
+            return new CarActivity[size];
+        }
+    };
     private String name;
     private String vin;
     private String engine;
@@ -12,9 +25,10 @@ class CarActivity extends ArrayList<CarActivity> {
     private String exterior;
     private String interior;
     private String address;
-    private List<String> coordinates;
+    private double lat;
+    private double lon;
 
-    CarActivity(String name, String vin, String engine, String fuel, String exterior, String interior, String address, List<String> coordinates) {
+    CarActivity(String name, String vin, String engine, String fuel, String exterior, String interior, String address, double lat, double lon) {
         setName(name);
         setVin(vin);
         setEngine(engine);
@@ -22,7 +36,32 @@ class CarActivity extends ArrayList<CarActivity> {
         setExterior(exterior);
         setInterior(interior);
         setAddress(address);
-        setCoordinates(coordinates);
+        setLat(lat);
+        setLon(lon);
+    }
+
+    private CarActivity(Parcel in) {
+        String[] data = new String[4];
+        in.readStringArray(data);
+        this.name = data[0];
+        this.lat = Double.parseDouble(data[1]);
+        this.lon = Double.parseDouble(data[2]);
+        this.address = data[3];
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeStringArray(new String[]{
+                this.name,
+                String.valueOf(this.lat),
+                String.valueOf(this.lon),
+                this.address
+        });
     }
 
     public String getName() {
@@ -81,11 +120,19 @@ class CarActivity extends ArrayList<CarActivity> {
         this.address = address;
     }
 
-    public List<String> getCoordinates() {
-        return coordinates;
+    public double getLat() {
+        return lat;
     }
 
-    private void setCoordinates(List<String> coordinates) {
-        this.coordinates = coordinates;
+    private void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    private void setLon(double lon) {
+        this.lon = lon;
     }
 }

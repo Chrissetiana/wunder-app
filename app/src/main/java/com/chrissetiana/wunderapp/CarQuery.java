@@ -113,6 +113,7 @@ public class CarQuery {
             JSONArray placemarks = object.getJSONArray("placemarks");
 
             int len = placemarks.length();
+
             for (int i = 0; i < len; i++) {
                 JSONObject property = placemarks.getJSONObject(i);
                 String name = property.optString("name");
@@ -123,21 +124,17 @@ public class CarQuery {
                 String interior = property.optString("interior");
                 String address = property.optString("address");
 
-                List<String> coordinates = new ArrayList<>();
                 JSONArray coord = property.getJSONArray("coordinates");
-                int arrLen = coord.length();
-                for (int j = 0; j < arrLen; j++) {
-                    coordinates.add(coord.optString(j));
-                }
+                double lat = coord.optDouble(0);
+                double lon = coord.optDouble(1);
 
-                CarActivity car = new CarActivity(name, vin, engine, fuel, exterior, interior, address, coordinates);
+                CarActivity car = new CarActivity(name, vin, engine, fuel, exterior, interior, address, lat, lon);
                 cars.add(car);
             }
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
-
         return cars;
     }
 }

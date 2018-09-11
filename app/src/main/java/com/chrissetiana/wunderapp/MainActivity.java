@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     RecyclerView listCars;
     TextView textEmpty;
     View progressBar;
+    List<CarActivity> data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,13 +86,13 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
                 }
 
                 progressBar.setVisibility(View.VISIBLE);
-
                 forceLoad();
             }
 
             @Override
             public List<CarActivity> loadInBackground() {
                 String source = bundle.getString(KEY);
+
                 if (TextUtils.isEmpty(source)) {
                     return null;
                 }
@@ -123,9 +124,9 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
-//        Dialog dialog = new Dialog(this);
-//        dialog.setContentView(R.layout.activity_detail);
-//        dialog.show();
+        // Dialog dialog = new Dialog(this);
+        // dialog.setContentView(R.layout.activity_detail);
+        // dialog.show();
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         startActivity(intent);
     }
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
         switch (id) {
             case R.id.menu_main:
                 Intent intent = new Intent(MainActivity.this, MapActivity.class);
@@ -148,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 }
