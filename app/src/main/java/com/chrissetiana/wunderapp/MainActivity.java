@@ -1,7 +1,6 @@
 package com.chrissetiana.wunderapp;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.AsyncTaskLoader;
@@ -124,9 +123,11 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.activity_detail);
-        dialog.show();
+//        Dialog dialog = new Dialog(this);
+//        dialog.setContentView(R.layout.activity_detail);
+//        dialog.show();
+        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        startActivity(intent);
     }
 
     @Override

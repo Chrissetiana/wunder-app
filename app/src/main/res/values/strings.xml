@@ -21,5 +21,6 @@
     <string name="car_interior">UNACCEPTABLE</string>
     <string name="car_address">Lesserstraße 170, 22049 Hamburg</string>
     <string name="car_coordinates">10.07526, 53.59301, 0</string>
+
     <string name="menu_map">Map View</string>
 </resources>

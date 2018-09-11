@@ -26,6 +26,9 @@
             android:name=".MapActivity"
             android:parentActivityName=".MainActivity">
         </activity>
+        <activity
+            android:name=".DetailActivity"
+            android:parentActivityName=".MainActivity"></activity>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyDrwQlXCvKMY2RfM641jCq3CxEoI5ftFkU" />
