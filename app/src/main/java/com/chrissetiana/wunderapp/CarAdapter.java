@@ -85,7 +85,19 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
             exterior.setText(position.getExterior());
             interior.setText(position.getInterior());
             address.setText(position.getAddress());
-//            coordinates.setText(position.getCoordinates());
+
+            StringBuilder coord = new StringBuilder();
+            List<String> coordinate = position.getCoordinates();
+            int len = coordinate.size();
+
+            for (int i = 0; i < len; i++) {
+                if (i > 0) {
+                    coord.append(", ");
+                }
+                coord.append(coordinate.get(i));
+            }
+
+            coordinates.setText(coord);
         }
 
         @Override
