@@ -1,7 +1,10 @@
 package com.chrissetiana.wunderapp;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
@@ -14,16 +17,22 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     GoogleMap map;
+    LocationManager locator;
+    Marker userMarker;
     String name;
     String address;
     Double lat;
     Double lon;
-    MarkerOptions options;
+
+    public MapActivity() {
+
+    }
 
     public MapActivity(String name, double lat, double lon, String address) {
         this.name = name;
@@ -42,6 +51,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             setContentView(R.layout.activity_map);
             loadMap();
         }
+
+        myLocation();
     }
 
     public boolean isPlayAvailable() {
@@ -68,6 +79,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         map.setBuildingsEnabled(true);
         map.getUiSettings().setCompassEnabled(true);
@@ -75,15 +87,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.getUiSettings().setRotateGesturesEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setZoomGesturesEnabled(true);
-        loadLocation(lat, lon, name, address);
 
+        map.addMarker(loadMarker(lat, lon, name, address));
+
+        LatLng loc = new LatLng(53.551086, 9.993682);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(loc, 15);
+        map.moveCamera(cameraUpdate);
     }
 
-    private void loadLocation(double lat, double lon, String name, String address) {
+    private MarkerOptions loadMarker(Double lat, Double lon, String name, String desc) {
         LatLng loc = new LatLng(lat, lon);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(loc, 10);
-        map.moveCamera(cameraUpdate);
-        options = new MarkerOptions().position(loc).title(name).snippet(address);
-        map.addMarker(options);
+        return new MarkerOptions().position(loc).title(name).snippet(desc);
+    }
+
+    private void myLocation() {
+        locator = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Location location = locator.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+
+        double myLat = location.getLatitude();
+        double myLon = location.getLongitude();
+        LatLng myLoc = new LatLng(myLat, myLon);
+
+        if (userMarker != null) {
+            userMarker.remove();
+        }
+
+        userMarker = map.addMarker(loadMarker(myLat, myLon, "You are here", "Last known location"));
+        // map.animateCamera(CameraUpdateFactory.newLatLng(myLoc), 3000, null);
     }
 }
