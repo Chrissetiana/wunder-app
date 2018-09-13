@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
     GoogleMap map;
     GoogleApiClient apiClient;
     LocationRequest locationRequest;
@@ -35,8 +37,40 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (isPlayAvailable()) {
             setContentView(R.layout.activity_map);
-            loadMap();
+            MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map_cars);
+            mapFragment.getMapAsync(this);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //stop location updates when Activity is no longer active
+        if (apiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, this);
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        map.getUiSettings().setMyLocationButtonEnabled(true);
+        map.getUiSettings().setZoomControlsEnabled(true);
+        buildApiClient();
+
+//         goToLocation(53.551086, 9.993682);
+        myLocation();
+    }
+
+    private synchronized void buildApiClient() {
+        apiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        apiClient.connect();
     }
 
     public boolean isPlayAvailable() {
@@ -55,28 +89,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return false;
     }
 
-    private void loadMap() {
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map_cars);
-        mapFragment.getMapAsync(this);
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-        map.getUiSettings().setMyLocationButtonEnabled(true);
-        map.getUiSettings().setZoomControlsEnabled(true);
-
-//         goToLocation(53.551086, 9.993682);
-//         myLocation();
-
-        apiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-        apiClient.connect();
-    }
-
     private void goToLocation(double lat, double lon) {
         LatLng loc = new LatLng(lat, lon);
         map.moveCamera(CameraUpdateFactory.newLatLng(loc));
@@ -88,50 +100,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+            checkLocationPermission();
+        } else {
+            map.setMyLocationEnabled(true);
         }
-        map.setMyLocationEnabled(true);
-        map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                if (apiClient != null) {
-                    updateLocation();
-                }
-                return false;
-            }
-        });
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        locationRequest = LocationRequest.create();
+        locationRequest = new LocationRequest();
         locationRequest.setInterval(1000);
+        locationRequest.setFastestInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        updateLocation();
-    }
 
-    private void updateLocation() {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+            checkLocationPermission();
+        } else {
+            LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, this);
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, this);
     }
 
     @Override
@@ -150,6 +139,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Toast.makeText(this, "Cannot get current location", Toast.LENGTH_SHORT).show();
         } else {
             goToLocation(location.getLatitude(), location.getLongitude());
+        }
+    }
+
+    private void checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+        } else {
+            // No explanation needed, we can request the permission.
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        if (apiClient == null) {
+                            buildApiClient();
+                        }
+                        map.setMyLocationEnabled(true);
+                    }
+                } else {
+                    // permission denied, boo! Disable the functionality that depends on this permission.
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+            // other 'case' lines to check for other permissions this app might request
         }
     }
 }
