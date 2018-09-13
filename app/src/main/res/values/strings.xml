@@ -24,4 +24,9 @@
 
     <string name="menu_map">Map View</string>
     <string name="flip_view">Change View</string>
+    <string name="map_type_none">NONE</string>
+    <string name="map_type_normal">NORMAL</string>
+    <string name="map_type_satellite">SATELLITE</string>
+    <string name="map_type_hybrid">HYBRID</string>
+    <string name="map_type_terrain">TERRAIN</string>
 </resources>

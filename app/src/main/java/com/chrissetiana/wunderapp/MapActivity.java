@@ -8,8 +8,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -55,12 +58,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         map.getUiSettings().setMyLocationButtonEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
         buildApiClient();
 
-//         goToLocation(53.551086, 9.993682);
+        goToLocation(53.551086, 9.993682);
         myLocation();
     }
 
@@ -104,6 +106,42 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         } else {
             map.setMyLocationEnabled(true);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.map, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.map_type_none:
+                map.setMapType(GoogleMap.MAP_TYPE_NONE);
+                break;
+            case R.id.map_type_normal:
+                map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                break;
+            case R.id.map_type_satellite:
+                map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                break;
+            case R.id.map_type_hybrid:
+                map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                break;
+            case R.id.map_type_terrain:
+                map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                break;
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
