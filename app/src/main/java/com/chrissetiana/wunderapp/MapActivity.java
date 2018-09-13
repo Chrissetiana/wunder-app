@@ -13,6 +13,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -26,6 +28,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -58,6 +62,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+
+        if (map != null) {
+            map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+                @Override
+                public View getInfoWindow(Marker marker) {
+                    return null;
+                }
+
+                @Override
+                public View getInfoContents(Marker marker) {
+                    View view = getLayoutInflater().inflate(R.layout.activity_info, null);
+                    LatLng loc = marker.getPosition();
+                    TextView textView = view.findViewById(R.id.text_info);
+                    textView.setText(marker.getTitle() + "\nLat: " + loc.latitude + "\nLon: " + loc.longitude);
+                    return view;
+                }
+            });
+        }
+
         map.getUiSettings().setMyLocationButtonEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
         buildApiClient();
@@ -95,6 +119,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LatLng loc = new LatLng(lat, lon);
         map.moveCamera(CameraUpdateFactory.newLatLng(loc));
         map.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+        MarkerOptions options = new MarkerOptions()
+                .title("")
+                .position(loc)
+                .snippet("");
+        map.addMarker(options);
     }
 
     private void myLocation() {

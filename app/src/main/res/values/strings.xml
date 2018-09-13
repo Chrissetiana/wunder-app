@@ -29,4 +29,5 @@
     <string name="map_type_satellite">SATELLITE</string>
     <string name="map_type_hybrid">HYBRID</string>
     <string name="map_type_terrain">TERRAIN</string>
+    <string name="info_window">This is an info window</string>
 </resources>
