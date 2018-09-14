@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
             buttonFlip.setVisibility(View.GONE);
             viewFlip.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.INVISIBLE);
+            textEmpty.setVisibility(View.VISIBLE);
             textEmpty.setText(getString(R.string.no_conn));
         }
     }
@@ -143,8 +144,6 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
-        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-        startActivity(intent);
     }
 
     @Override

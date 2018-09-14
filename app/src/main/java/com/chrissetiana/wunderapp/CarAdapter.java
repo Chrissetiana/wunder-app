@@ -22,10 +22,6 @@ class CarAdapter extends RecyclerView.Adapter<CarAdapter.CarViewHolder> {
         listener = clickListener;
     }
 
-    public List<CarActivity> getData() {
-        return cars;
-    }
-
     public void setData(List<CarActivity> data) {
         this.cars = data;
     }

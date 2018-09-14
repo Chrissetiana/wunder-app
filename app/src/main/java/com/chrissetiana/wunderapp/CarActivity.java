@@ -4,18 +4,6 @@ import java.util.ArrayList;
 
 class CarActivity extends ArrayList<CarActivity> {
 
-//    public static final Creator<CarActivity> CREATOR = new Creator<CarActivity>() {
-//        @Override
-//        public CarActivity createFromParcel(Parcel in) {
-//            return new CarActivity(in);
-//        }
-//
-//        @Override
-//        public CarActivity[] newArray(int size) {
-//            return new CarActivity[size];
-//        }
-//    };
-
     private String name;
     private String vin;
     private String engine;
@@ -37,30 +25,6 @@ class CarActivity extends ArrayList<CarActivity> {
         setLat(lat);
         setLon(lon);
     }
-
-//    private CarActivity(Parcel in) {
-//        String[] data = new String[4];
-//        in.readStringArray(data);
-//        this.name = data[0];
-//        this.lat = Double.parseDouble(data[1]);
-//        this.lon = Double.parseDouble(data[2]);
-//        this.address = data[3];
-//    }
-//
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeStringArray(new String[]{
-//                this.name,
-//                String.valueOf(this.lat),
-//                String.valueOf(this.lon),
-//                this.address
-//        });
-//    }
 
     public String getName() {
         return name;
