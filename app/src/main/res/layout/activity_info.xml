@@ -5,9 +5,24 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/text_info"
+        android:id="@+id/info_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/info_window" />
+        android:gravity="center"
+        android:textAppearance="?android:textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/info_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="?android:textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/info_coordinates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="?android:textAppearanceSmall" />
 
 </LinearLayout>

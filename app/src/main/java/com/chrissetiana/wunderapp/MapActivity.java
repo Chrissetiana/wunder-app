@@ -99,6 +99,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
                 @Override
                 public boolean onMyLocationButtonClick() {
+                    Toast.makeText(MapActivity.this, "Current Location", Toast.LENGTH_LONG).show();
                     return true;
                 }
             });
@@ -111,9 +112,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 @Override
                 public View getInfoContents(Marker marker) {
                     View view = getLayoutInflater().inflate(R.layout.activity_info, null);
+
+                    TextView carName = view.findViewById(R.id.info_name);
+                    carName.setText(marker.getTitle());
+
+                    TextView carAddress = view.findViewById(R.id.info_address);
+                    carAddress.setText(marker.getSnippet());
+
                     LatLng loc = marker.getPosition();
-                    TextView textView = view.findViewById(R.id.text_info);
-                    textView.setText(marker.getTitle() + "\nLat: " + loc.latitude + "\nLon: " + loc.longitude);
+                    TextView carCoordinates = view.findViewById(R.id.info_coordinates);
+                    String location = loc.latitude + ", " + loc.longitude;
+                    carCoordinates.setText(location);
+
                     return view;
                 }
             });
@@ -136,6 +146,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         goToLocation(53.551086, 9.993682);
+        loadMarker(53.551086, 9.993682, "Hamburg", "Hamburg, Germany");
     }
 
     private void goToLocation(double lat, double lon) {
@@ -220,10 +231,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (fusedProviderClient != null) {
+            if (ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                checkLocationPermission();
+                return;
+            } else {
+                fusedProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+            }
+        }
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
 
-        //stop location updates when Activity is no longer active
         if (fusedProviderClient != null) {
             fusedProviderClient.removeLocationUpdates(locationCallback);
         }

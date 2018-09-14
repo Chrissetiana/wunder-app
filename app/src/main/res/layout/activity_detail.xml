@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
     android:layout_margin="@dimen/outer"
     android:orientation="vertical">
 
@@ -22,7 +23,7 @@
             android:id="@+id/car_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/car_name" />
+            tools:text="@string/car_name" />
 
     </LinearLayout>
 
@@ -44,7 +45,7 @@
             android:id="@+id/car_vin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/car_vin" />
+            tools:text="@string/car_vin" />
 
     </LinearLayout>
 
@@ -66,7 +67,7 @@
             android:id="@+id/car_engine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/car_engine" />
+            tools:text="@string/car_engine" />
 
     </LinearLayout>
 
@@ -88,7 +89,7 @@
             android:id="@+id/car_fuel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/car_fuel" />
+            tools:text="@string/car_fuel" />
 
     </LinearLayout>
 
@@ -110,7 +111,7 @@
             android:id="@+id/car_exterior"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/car_exterior" />
+            tools:text="@string/car_exterior" />
 
     </LinearLayout>
 
@@ -132,7 +133,7 @@
             android:id="@+id/car_interior"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/car_interior" />
+            tools:text="@string/car_interior" />
 
     </LinearLayout>
 
@@ -154,7 +155,7 @@
             android:id="@+id/car_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/car_address" />
+            tools:text="@string/car_address" />
 
     </LinearLayout>
 
@@ -175,7 +176,7 @@
             android:id="@+id/car_coordinates"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/car_coordinates" />
+            tools:text="@string/car_coordinates" />
 
     </LinearLayout>
 
