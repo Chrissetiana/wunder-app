@@ -12,6 +12,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -64,6 +65,9 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         listCars.setLayoutManager(layoutManager);
         listCars.setHasFixedSize(false);
         listCars.setAdapter(adapter);
+
+        DividerItemDecoration divider = new DividerItemDecoration(listCars.getContext(), layoutManager.getOrientation());
+        listCars.addItemDecoration(divider);
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         assert connectivityManager != null;
