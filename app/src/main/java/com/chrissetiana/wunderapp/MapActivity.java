@@ -49,14 +49,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (list.size() > 0) {
                 Location location = list.get(list.size() - 1);
                 lastLocation = location;
-
-                double lat = location.getLatitude();
-                double lon = location.getLongitude();
-
-                goToLocation(lat, lon);
-                loadMarker(lat, lon, "Current Location", "You are here");
-
-                Log.d("MapActivity", "Location: " + lat + "," + lon);
             }
         }
     };
@@ -99,7 +91,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
                 @Override
                 public boolean onMyLocationButtonClick() {
-                    Toast.makeText(MapActivity.this, "Current Location", Toast.LENGTH_LONG).show();
+                    double lat = lastLocation.getLatitude();
+                    double lon = lastLocation.getLongitude();
+
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 15));
+                    loadMarker(lat, lon, "Current Location", "You are here");
+
+                    Log.d("MapActivity", "Location: " + lat + "," + lon);
                     return true;
                 }
             });
