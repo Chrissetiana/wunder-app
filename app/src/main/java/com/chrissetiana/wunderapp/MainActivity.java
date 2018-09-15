@@ -16,12 +16,12 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<CarActivity>>, CarAdapter.ListItemClickListener {
@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     private static final String SOURCE = "https://s3-us-west-2.amazonaws.com/wunderbucket/locations.json";
     private static final String KEY = "query";
     private static final int LOADER_ID = 1;
+    MapActivity map;
     CarAdapter adapter;
     RecyclerView listCars;
     TextView textEmpty;
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         listCars = findViewById(R.id.list_cars);
         textEmpty = findViewById(R.id.text_empty);
         progressBar = findViewById(R.id.progress_bar);
-
+        map = new MapActivity();
         adapter = new CarAdapter(this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         };
     }
 
+    @SuppressLint("ResourceType")
     @Override
     public void onLoadFinished(Loader<List<CarActivity>> loader, List<CarActivity> data) {
         progressBar.setVisibility(View.INVISIBLE);
@@ -115,10 +117,13 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         if (data == null) {
             textEmpty.setVisibility(View.VISIBLE);
             textEmpty.setText(getString(R.string.no_data));
+            findViewById(R.menu.main).setEnabled(false);
         } else {
             textEmpty.setVisibility(View.INVISIBLE);
             adapter.setData(data);
             adapter.notifyDataSetChanged();
+//            map.setData(data);
+            cars = data;
         }
     }
 
@@ -142,8 +147,13 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
 
         switch (id) {
             case R.id.menu_main:
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("ArrayList", (Serializable) cars);
+
                 Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                intent.putExtra("Bundle", bundle);
                 startActivity(intent);
+
                 return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);

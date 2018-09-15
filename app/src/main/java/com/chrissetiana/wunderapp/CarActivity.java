@@ -1,8 +1,9 @@
 package com.chrissetiana.wunderapp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-class CarActivity extends ArrayList<CarActivity> {
+class CarActivity extends ArrayList<CarActivity> implements Serializable {
 
     private String name;
     private String vin;

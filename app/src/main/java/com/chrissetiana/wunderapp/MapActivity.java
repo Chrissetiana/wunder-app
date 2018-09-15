@@ -2,6 +2,7 @@ package com.chrissetiana.wunderapp;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -29,15 +30,20 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    public static final String TAG = "MapActivity";
+    ArrayList<CarActivity> cars;
     GoogleMap map;
+    Marker marker;
     LocationRequest locationRequest;
     Location lastLocation;
     FusedLocationProviderClient fusedProviderClient;
@@ -47,8 +53,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             List<Location> list = locationResult.getLocations();
 
             if (list.size() > 0) {
-                Location location = list.get(list.size() - 1);
-                lastLocation = location;
+                lastLocation = list.get(list.size() - 1);
             }
         }
     };
@@ -56,6 +61,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("Bundle");
+        cars = (ArrayList<CarActivity>) bundle.getSerializable("ArrayList");
 
         if (isPlayAvailable()) {
             setContentView(R.layout.activity_map);
@@ -94,10 +103,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     double lat = lastLocation.getLatitude();
                     double lon = lastLocation.getLongitude();
 
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 15));
-                    loadMarker(lat, lon, "Current Location", "You are here");
+                    if (marker != null) {
+                        marker.remove();
+                    }
 
-                    Log.d("MapActivity", "Location: " + lat + "," + lon);
+                    LatLng loc = new LatLng(lat, lon);
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 10));
+
+                    marker = map.addMarker(new MarkerOptions()
+                            .position(new LatLng(lat, lon)) // 9.1329843,7.3530768, Abuja
+                            .title("Current Location")
+                            .snippet("You are here")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+                    Log.d("MapActivity", "mark created for current " + marker.getPosition());
+
                     return true;
                 }
             });
@@ -143,21 +163,41 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
 
-        goToLocation(53.551086, 9.993682);
-        loadMarker(53.551086, 9.993682, "Hamburg", "Hamburg, Germany");
+        LatLng loc = new LatLng(53.551086, 9.993682);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 10));
+        map.addMarker(new MarkerOptions()
+                .position(new LatLng(53.551086, 9.993682))
+                .title("Hamburg")
+                .snippet("Hamburg, Germany"));
+
+        loadCarMarkers();
     }
 
-    private void goToLocation(double lat, double lon) {
-        LatLng loc = new LatLng(lat, lon);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
-    }
+    private void loadCarMarkers() {
+        ArrayList<Marker> marks = new ArrayList<>();
+        Marker mark;
 
-    private void loadMarker(double lat, double lon, String title, String desc) {
-        MarkerOptions options = new MarkerOptions()
-                .title(title)
-                .position(new LatLng(lat, lon))
-                .snippet(desc);
-        map.addMarker(options);
+        for (CarActivity car : cars) {
+            Log.d(TAG, "Names: " + car.getName());
+            mark = map.addMarker(new MarkerOptions()
+                    .position(new LatLng(car.getLat(), car.getLon()))
+                    .title(car.getName())
+                    .snippet(car.getAddress()));
+            marks.add(mark);
+            Log.d("MapActivity", "mark created for " + mark.getTitle() + " at " + mark.getPosition());
+
+        }
+        Log.d("MapActivity", "ArrayList marks: " + marks.toString());
+
+        for (Marker m : marks) {
+            LatLng loc = new LatLng(m.getPosition().latitude, m.getPosition().longitude);
+            map.addMarker(new MarkerOptions()
+                    .position(loc)
+                    .title(m.getTitle())
+                    .snippet(m.getSnippet()));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 1));
+        }
+        Log.d("MapActivity", "ArrayList marker " + marks.toString());
     }
 
     @Override
@@ -207,7 +247,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-
         switch (requestCode) {
             case 1: {
                 // If request is cancelled, the result arrays are empty.
@@ -222,7 +261,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     // permission denied, boo! Disable the functionality that depends on this permission.
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
                 }
-                return;
             }
             // other 'case' lines to check for other permissions this app might request
         }
@@ -238,7 +276,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     ActivityCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 checkLocationPermission();
-                return;
             } else {
                 fusedProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
             }
