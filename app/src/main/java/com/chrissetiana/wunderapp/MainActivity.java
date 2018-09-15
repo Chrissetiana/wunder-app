@@ -16,12 +16,11 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 
 import java.util.List;
 
@@ -34,9 +33,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     RecyclerView listCars;
     TextView textEmpty;
     View progressBar;
-    Button buttonFlip;
-    ViewFlipper viewFlip;
-    List<CarActivity> data;
+    List<CarActivity> cars;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,18 +43,6 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         listCars = findViewById(R.id.list_cars);
         textEmpty = findViewById(R.id.text_empty);
         progressBar = findViewById(R.id.progress_bar);
-
-        viewFlip = findViewById(R.id.view_flip);
-
-        buttonFlip = findViewById(R.id.button_flip);
-        buttonFlip.setVisibility(View.GONE);
-        buttonFlip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewFlip.startFlipping();
-                // viewFlip.stopFlipping();
-            }
-        });
 
         adapter = new CarAdapter(this);
 
@@ -76,8 +61,6 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         if (networkInfo != null && networkInfo.isConnected()) {
             loadQuery();
         } else {
-            buttonFlip.setVisibility(View.GONE);
-            viewFlip.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.INVISIBLE);
             textEmpty.setVisibility(View.VISIBLE);
             textEmpty.setText(getString(R.string.no_conn));
@@ -130,12 +113,9 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         progressBar.setVisibility(View.INVISIBLE);
 
         if (data == null) {
-            buttonFlip.setVisibility(View.GONE);
-            viewFlip.setVisibility(View.INVISIBLE);
             textEmpty.setVisibility(View.VISIBLE);
             textEmpty.setText(getString(R.string.no_data));
         } else {
-            viewFlip.setVisibility(View.VISIBLE);
             textEmpty.setVisibility(View.INVISIBLE);
             adapter.setData(data);
             adapter.notifyDataSetChanged();
