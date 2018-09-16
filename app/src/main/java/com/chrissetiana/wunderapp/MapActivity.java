@@ -63,8 +63,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        Bundle bundle = intent.getBundleExtra("Bundle");
-        cars = (ArrayList<CarActivity>) bundle.getSerializable("ArrayList");
+        cars = intent.getExtras().getParcelableArrayList("Cars");
 
         if (isPlayAvailable()) {
             setContentView(R.layout.activity_map);
@@ -165,10 +164,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         LatLng loc = new LatLng(53.551086, 9.993682);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 10));
-        map.addMarker(new MarkerOptions()
-                .position(new LatLng(53.551086, 9.993682))
-                .title("Hamburg")
-                .snippet("Hamburg, Germany"));
 
         loadCarMarkers();
     }
@@ -178,7 +173,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Marker mark;
 
         for (CarActivity car : cars) {
-            Log.d(TAG, "Names: " + car.getName());
             mark = map.addMarker(new MarkerOptions()
                     .position(new LatLng(car.getLat(), car.getLon()))
                     .title(car.getName())
@@ -187,7 +181,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Log.d("MapActivity", "mark created for " + mark.getTitle() + " at " + mark.getPosition());
 
         }
-        Log.d("MapActivity", "ArrayList marks: " + marks.toString());
 
         for (Marker m : marks) {
             LatLng loc = new LatLng(m.getPosition().latitude, m.getPosition().longitude);
@@ -195,9 +188,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .position(loc)
                     .title(m.getTitle())
                     .snippet(m.getSnippet()));
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 1));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 20));
         }
-        Log.d("MapActivity", "ArrayList marker " + marks.toString());
+        Log.d("MapActivity", "ArrayList marker: " + marks.size());
     }
 
     @Override

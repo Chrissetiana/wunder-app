@@ -1,10 +1,23 @@
 package com.chrissetiana.wunderapp;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
-class CarActivity extends ArrayList<CarActivity> implements Serializable {
+class CarActivity extends ArrayList<CarActivity> implements Parcelable {
 
+    public static final Creator<CarActivity> CREATOR = new Creator<CarActivity>() {
+        @Override
+        public CarActivity createFromParcel(Parcel parcel) {
+            return new CarActivity(parcel);
+        }
+
+        @Override
+        public CarActivity[] newArray(int size) {
+            return new CarActivity[size];
+        }
+    };
     private String name;
     private String vin;
     private String engine;
@@ -25,6 +38,26 @@ class CarActivity extends ArrayList<CarActivity> implements Serializable {
         setAddress(address);
         setLat(lat);
         setLon(lon);
+    }
+
+    protected CarActivity(Parcel parcel) {
+        lat = parcel.readDouble();
+        lon = parcel.readDouble();
+        name = parcel.readString();
+        address = parcel.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeDouble(lat);
+        dest.writeDouble(lon);
+        dest.writeString(name);
+        dest.writeString(address);
     }
 
     public String getName() {

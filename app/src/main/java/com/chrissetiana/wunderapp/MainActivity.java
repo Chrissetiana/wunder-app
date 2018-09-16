@@ -21,7 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<CarActivity>>, CarAdapter.ListItemClickListener {
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
     RecyclerView listCars;
     TextView textEmpty;
     View progressBar;
-    List<CarActivity> cars;
+    ArrayList<CarActivity> cars;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
             adapter.setData(data);
             adapter.notifyDataSetChanged();
 //            map.setData(data);
-            cars = data;
+            cars = (ArrayList<CarActivity>) data;
         }
     }
 
@@ -148,10 +148,10 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         switch (id) {
             case R.id.menu_main:
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("ArrayList", (Serializable) cars);
+                bundle.putParcelableArrayList("Cars", cars);
 
                 Intent intent = new Intent(MainActivity.this, MapActivity.class);
-                intent.putExtra("Bundle", bundle);
+                intent.putExtras(bundle);
                 startActivity(intent);
 
                 return true;
