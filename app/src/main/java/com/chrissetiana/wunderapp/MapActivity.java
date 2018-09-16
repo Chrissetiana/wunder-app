@@ -32,6 +32,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -42,8 +43,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public static final String TAG = "MapActivity";
     ArrayList<CarActivity> cars;
+    ArrayList<Marker> marks = new ArrayList<>(); // arraylist of car markers
+    Marker locationMarker; // location locationMarker
+    Marker carMarker; // car locationMarker
     GoogleMap map;
-    Marker marker;
     LocationRequest locationRequest;
     Location lastLocation;
     FusedLocationProviderClient fusedProviderClient;
@@ -102,22 +105,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     double lat = lastLocation.getLatitude();
                     double lon = lastLocation.getLongitude();
 
-                    if (marker != null) {
-                        marker.remove();
+                    if (locationMarker != null) {
+                        locationMarker.remove();
                     }
 
                     LatLng loc = new LatLng(lat, lon);
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 10));
 
-                    marker = map.addMarker(new MarkerOptions()
+                    locationMarker = map.addMarker(new MarkerOptions()
                             .position(new LatLng(lat, lon)) // 9.1329843,7.3530768, Abuja
                             .title("Current Location")
                             .snippet("You are here")
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
-                    Log.d("MapActivity", "mark created for current " + marker.getPosition());
+                    Log.d("MapActivity", "carMarker created for current " + locationMarker.getPosition());
 
                     return true;
+                }
+            });
+            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(final Marker marker) {
+                    return false;
                 }
             });
             map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -162,35 +171,32 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
 
-        LatLng loc = new LatLng(53.551086, 9.993682);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 10));
-
         loadCarMarkers();
     }
 
     private void loadCarMarkers() {
-        ArrayList<Marker> marks = new ArrayList<>();
-        Marker mark;
-
         for (CarActivity car : cars) {
-            mark = map.addMarker(new MarkerOptions()
+            carMarker = map.addMarker(new MarkerOptions()
                     .position(new LatLng(car.getLat(), car.getLon()))
                     .title(car.getName())
                     .snippet(car.getAddress()));
-            marks.add(mark);
-            Log.d("MapActivity", "mark created for " + mark.getTitle() + " at " + mark.getPosition());
-
+            marks.add(carMarker);
         }
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         for (Marker m : marks) {
-            LatLng loc = new LatLng(m.getPosition().latitude, m.getPosition().longitude);
+            // LatLng loc = new LatLng(m.getPosition().latitude, m.getPosition().longitude);
             map.addMarker(new MarkerOptions()
-                    .position(loc)
+                    .position(m.getPosition())
                     .title(m.getTitle())
                     .snippet(m.getSnippet()));
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 20));
+            builder.include(m.getPosition());
         }
-        Log.d("MapActivity", "ArrayList marker: " + marks.size());
+
+        LatLngBounds bounds = builder.build();
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+        Log.d("MapActivity", "Created " + marks.size() + " marks.");
     }
 
     @Override

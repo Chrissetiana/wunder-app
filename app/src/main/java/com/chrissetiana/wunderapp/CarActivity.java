@@ -3,9 +3,12 @@ package com.chrissetiana.wunderapp;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
+
 import java.util.ArrayList;
 
-class CarActivity extends ArrayList<CarActivity> implements Parcelable {
+class CarActivity extends ArrayList<CarActivity> implements Parcelable, ClusterItem {
 
     public static final Creator<CarActivity> CREATOR = new Creator<CarActivity>() {
         @Override
@@ -27,6 +30,7 @@ class CarActivity extends ArrayList<CarActivity> implements Parcelable {
     private String address;
     private double lat;
     private double lon;
+    private LatLng location;
 
     CarActivity(String name, String vin, String engine, String fuel, String exterior, String interior, String address, double lat, double lon) {
         setName(name);
@@ -40,7 +44,17 @@ class CarActivity extends ArrayList<CarActivity> implements Parcelable {
         setLon(lon);
     }
 
-    protected CarActivity(Parcel parcel) {
+    CarActivity(double lat, double lon) {
+        location = new LatLng(lat, lon);
+    }
+
+    CarActivity(double lat, double lon, String title, String snippet) {
+        location = new LatLng(lat, lon);
+        name = title;
+        address = snippet;
+    }
+
+    private CarActivity(Parcel parcel) {
         lat = parcel.readDouble();
         lon = parcel.readDouble();
         name = parcel.readString();
@@ -58,6 +72,21 @@ class CarActivity extends ArrayList<CarActivity> implements Parcelable {
         dest.writeDouble(lon);
         dest.writeString(name);
         dest.writeString(address);
+    }
+
+    @Override
+    public LatLng getPosition() {
+        return location;
+    }
+
+    @Override
+    public String getTitle() {
+        return name;
+    }
+
+    @Override
+    public String getSnippet() {
+        return address;
     }
 
     public String getName() {

@@ -117,12 +117,10 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         if (data == null) {
             textEmpty.setVisibility(View.VISIBLE);
             textEmpty.setText(getString(R.string.no_data));
-            findViewById(R.menu.main).setEnabled(false);
         } else {
             textEmpty.setVisibility(View.INVISIBLE);
             adapter.setData(data);
             adapter.notifyDataSetChanged();
-//            map.setData(data);
             cars = (ArrayList<CarActivity>) data;
         }
     }
