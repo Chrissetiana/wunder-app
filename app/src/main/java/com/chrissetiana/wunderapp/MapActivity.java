@@ -35,22 +35,26 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
+        ClusterManager.OnClusterClickListener<CarActivity>,
+        ClusterManager.OnClusterItemClickListener<CarActivity> {
 
-    public static final String TAG = "MapActivity";
-    ArrayList<CarActivity> cars;
-    ArrayList<Marker> marks = new ArrayList<>(); // arraylist of car markers
-    Marker locationMarker; // location locationMarker
-    Marker carMarker; // car locationMarker
-    GoogleMap map;
-    LocationRequest locationRequest;
-    Location lastLocation;
-    FusedLocationProviderClient fusedProviderClient;
-    LocationCallback locationCallback = new LocationCallback() {
+    private ArrayList<CarActivity> cars;
+    private ArrayList<Marker> marks = new ArrayList<>();
+    private Marker locationMarker;
+    private Marker selectedMarker = null;
+    private GoogleMap map;
+    private ClusterManager<CarActivity> clusterManager;
+    private LocationRequest locationRequest;
+    private Location lastLocation;
+    private FusedLocationProviderClient fusedProviderClient;
+    private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             List<Location> list = locationResult.getLocations();
@@ -97,36 +101,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map = googleMap;
 
         if (map != null) {
+            clusterManager = new ClusterManager<>(this, map);
+            clusterManager.setOnClusterClickListener(this);
+            clusterManager.setOnClusterItemClickListener(this);
+
             map.getUiSettings().setZoomControlsEnabled(true);
+            map.getUiSettings().setAllGesturesEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
-            map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            map.setOnCameraIdleListener(clusterManager);
+            map.setOnInfoWindowClickListener(clusterManager);
+            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
-                public boolean onMyLocationButtonClick() {
-                    double lat = lastLocation.getLatitude();
-                    double lon = lastLocation.getLongitude();
-
-                    if (locationMarker != null) {
-                        locationMarker.remove();
-                    }
-
-                    LatLng loc = new LatLng(lat, lon);
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 10));
-
-                    locationMarker = map.addMarker(new MarkerOptions()
-                            .position(new LatLng(lat, lon)) // 9.1329843,7.3530768, Abuja
-                            .title("Current Location")
-                            .snippet("You are here")
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
-                    Log.d("MapActivity", "carMarker created for current " + locationMarker.getPosition());
-
-                    return true;
+                public void onMapClick(LatLng latLng) {
+                    selectedMarker = null;
                 }
             });
             map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
-                public boolean onMarkerClick(final Marker marker) {
-                    return false;
+                public boolean onMarkerClick(Marker marker) {
+                    if (marker.equals(selectedMarker)) {
+                        selectedMarker = null;
+
+                        for (Marker m : marks) {
+                            m.setVisible(true);
+                        }
+
+                        return true;
+                    } else {
+                        selectedMarker = marker;
+
+                        for (Marker m : marks) {
+                            if (!m.equals(selectedMarker)) {
+                                m.setVisible(false);
+                            }
+                        }
+
+                        return false;
+                    }
                 }
             });
             map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -153,6 +164,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     return view;
                 }
             });
+            map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                @Override
+                public boolean onMyLocationButtonClick() {
+                    double lat = lastLocation.getLatitude();
+                    double lon = lastLocation.getLongitude();
+
+                    if (locationMarker != null) {
+                        locationMarker.remove();
+                    }
+
+                    LatLng loc = new LatLng(lat, lon);
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 10));
+
+                    locationMarker = map.addMarker(new MarkerOptions()
+                            .position(new LatLng(lat, lon)) // 9.1329843,7.3530768, Abuja
+                            .title("Current Location")
+                            .snippet("You are here")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+                    Log.d("MapActivity", "carMarker created for current " + locationMarker.getPosition());
+
+                    return true;
+                }
+            });
 
             locationRequest = new LocationRequest();
             locationRequest.setInterval(1000);
@@ -171,32 +206,106 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
 
-        loadCarMarkers();
+        loadMarkers();
+        clusterManager.cluster();
+        // map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(9.86430, 53.64550), 15));
     }
 
-    private void loadCarMarkers() {
+    private void loadMarkers() {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
         for (CarActivity car : cars) {
-            carMarker = map.addMarker(new MarkerOptions()
-                    .position(new LatLng(car.getLat(), car.getLon()))
+            LatLng loc = new LatLng(car.getLat(), car.getLon());
+            Marker carMarker = map.addMarker(new MarkerOptions()
+                    .position(loc)
                     .title(car.getName())
                     .snippet(car.getAddress()));
             marks.add(carMarker);
+            builder.include(loc);
+//            loadCluster(car.getLat(), car.getLon());
         }
+        Log.d("MapActivity", "Created " + marks.size() + " marks.");
 
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
-        for (Marker m : marks) {
-            // LatLng loc = new LatLng(m.getPosition().latitude, m.getPosition().longitude);
-            map.addMarker(new MarkerOptions()
-                    .position(m.getPosition())
-                    .title(m.getTitle())
-                    .snippet(m.getSnippet()));
-            builder.include(m.getPosition());
-        }
+//        for (Marker m : marks) {
+//            map.addMarker(new MarkerOptions()
+//                    .position(m.getPosition())
+//                    .title(m.getTitle())
+//                    .snippet(m.getSnippet()));
+//            builder.include(m.getPosition());
+//        }
 
         LatLngBounds bounds = builder.build();
-        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
-        Log.d("MapActivity", "Created " + marks.size() + " marks.");
+
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels;
+        int padding = (int) (width * 0.10); // offset from edges of the map 10% of screen
+
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding));
+    }
+
+    private void loadCluster(double lat, double lon) {
+        for (int i = 0; i < 10; i++) {
+            double offset = i / 60d;
+            lat = lat + offset;
+            lon = lon + offset;
+
+            CarActivity offsetItem = new CarActivity(lat, lon);
+            clusterManager.addItem(offsetItem);
+        }
+    }
+
+    private void loadCluster(double lat, double lon, String title, String snippet) {
+        for (int i = 0; i < 10; i++) {
+            double offset = i / 60d;
+            lat = lat + offset;
+            lon = lon + offset;
+
+            CarActivity offsetItem = new CarActivity(lat, lon, title, snippet);
+            clusterManager.addItem(offsetItem);
+        }
+    }
+
+    @Override
+    public boolean onClusterClick(Cluster<CarActivity> cluster) {
+        double minLat = 0;
+        double minLon = 0;
+        double maxLat = 0;
+        double maxLon = 0;
+
+        for (CarActivity car : cluster.getItems()) {
+            double lat = car.getPosition().latitude;
+            double lon = car.getPosition().longitude;
+
+            if (minLat == 0 & minLon == 0 & maxLat == 0 & maxLon == 0) {
+                minLat = maxLat = lat;
+                minLon = maxLon = lon;
+            }
+            if (lat > maxLat) {
+                maxLat = lat;
+            }
+            if (lon > maxLon) {
+                maxLon = lon;
+            }
+            if (lat < minLat) {
+                minLat = lat;
+            }
+            if (lon < minLon) {
+                minLon = lon;
+            }
+        }
+
+        LatLng sw = new LatLng(minLat, minLon);
+        LatLng ne = new LatLng(maxLat, maxLon);
+        LatLngBounds bounds = new LatLngBounds(sw, ne);
+
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+
+        return true;
+    }
+
+    @Override
+    public boolean onClusterItemClick(CarActivity car) {
+        return false;
     }
 
     @Override
