@@ -109,7 +109,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             map.getUiSettings().setAllGesturesEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
             map.setOnCameraIdleListener(clusterManager);
-            map.setOnInfoWindowClickListener(clusterManager);
+//            map.setOnInfoWindowClickListener(clusterManager);
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng latLng) {

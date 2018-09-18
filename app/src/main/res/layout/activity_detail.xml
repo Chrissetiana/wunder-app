@@ -1,176 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="wrap_content"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="@dimen/outer"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/name"
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_gravity="center"
+        card_view:cardElevation="@dimen/card_elevation"
+        card_view:contentPadding="@dimen/inner">
 
-        <TextView
-            android:layout_width="@dimen/label_width"
-            android:layout_height="wrap_content"
-            android:text="@string/label_name"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/car_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="@string/car_name" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/vin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="@dimen/label_width"
-            android:layout_height="wrap_content"
-            android:text="@string/label_vin"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/car_vin"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="@string/car_vin" />
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-    <LinearLayout
-        android:id="@+id/engine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+                <TextView
+                    android:layout_width="@dimen/label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_name"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="@dimen/label_width"
-            android:layout_height="wrap_content"
-            android:text="@string/label_engine"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/car_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/car_name" />
 
-        <TextView
-            android:id="@+id/car_engine"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="@string/car_engine" />
+            </LinearLayout>
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-    <LinearLayout
-        android:id="@+id/fuel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+                <TextView
+                    android:layout_width="@dimen/label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_vin"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="@dimen/label_width"
-            android:layout_height="wrap_content"
-            android:text="@string/label_fuel"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/car_vin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/car_vin" />
 
-        <TextView
-            android:id="@+id/car_fuel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="@string/car_fuel" />
+            </LinearLayout>
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-    <LinearLayout
-        android:id="@+id/exterior"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+                <TextView
+                    android:layout_width="@dimen/label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_engine"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="@dimen/label_width"
-            android:layout_height="wrap_content"
-            android:text="@string/label_exterior"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/car_engine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/car_engine" />
 
-        <TextView
-            android:id="@+id/car_exterior"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="@string/car_exterior" />
+            </LinearLayout>
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-    <LinearLayout
-        android:id="@+id/interior"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+                <TextView
+                    android:layout_width="@dimen/label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_fuel"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="@dimen/label_width"
-            android:layout_height="wrap_content"
-            android:text="@string/label_interior"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/car_fuel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/car_fuel" />
 
-        <TextView
-            android:id="@+id/car_interior"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="@string/car_interior" />
+            </LinearLayout>
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-    <LinearLayout
-        android:id="@+id/address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+                <TextView
+                    android:layout_width="@dimen/label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_exterior"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="@dimen/label_width"
-            android:layout_height="wrap_content"
-            android:text="@string/label_address"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/car_exterior"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/car_exterior" />
 
-        <TextView
-            android:id="@+id/car_address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="@string/car_address" />
+            </LinearLayout>
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+                <TextView
+                    android:layout_width="@dimen/label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_interior"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="@dimen/label_width"
-            android:layout_height="wrap_content"
-            android:text="@string/label_coordinates"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/car_interior"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/car_interior" />
 
-        <TextView
-            android:id="@+id/car_coordinates"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="@string/car_coordinates" />
+            </LinearLayout>
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_address"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/car_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/car_address" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/label_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_coordinates"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/car_coordinates"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/car_coordinates" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
 </LinearLayout>

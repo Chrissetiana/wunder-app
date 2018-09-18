@@ -23,11 +23,9 @@
     <string name="car_coordinates">10.07526, 53.59301, 0</string>
 
     <string name="menu_map">Map View</string>
-    <string name="flip_view">Change View</string>
     <string name="map_type_none">NONE</string>
     <string name="map_type_normal">NORMAL</string>
     <string name="map_type_satellite">SATELLITE</string>
     <string name="map_type_hybrid">HYBRID</string>
     <string name="map_type_terrain">TERRAIN</string>
-    <string name="info_window">This is an info window</string>
 </resources>
