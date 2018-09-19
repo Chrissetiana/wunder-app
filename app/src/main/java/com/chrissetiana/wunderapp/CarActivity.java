@@ -44,12 +44,8 @@ class CarActivity extends ArrayList<CarActivity> implements Parcelable, ClusterI
         setLon(lon);
     }
 
-    CarActivity(double lat, double lon) {
-        location = new LatLng(lat, lon);
-    }
-
-    CarActivity(double lat, double lon, String title, String snippet) {
-        location = new LatLng(lat, lon);
+    CarActivity(LatLng loc, String title, String snippet) {
+        location = loc;
         name = title;
         address = snippet;
     }

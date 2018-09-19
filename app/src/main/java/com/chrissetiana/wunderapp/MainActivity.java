@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         listCars.setHasFixedSize(false);
         listCars.setAdapter(adapter);
 
+        isConnected();
+    }
+
+    private void isConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         assert connectivityManager != null;
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -140,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.menu_main:
+            case R.id.menu_map:
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("Cars", cars);
 
@@ -148,6 +152,9 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
                 intent.putExtras(bundle);
                 startActivity(intent);
 
+                return true;
+            case R.id.menu_refresh:
+                isConnected();
                 return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
