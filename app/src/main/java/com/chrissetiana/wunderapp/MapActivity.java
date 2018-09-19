@@ -35,22 +35,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.clustering.Cluster;
-import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
-        ClusterManager.OnClusterClickListener<CarActivity>,
-        ClusterManager.OnClusterItemClickListener<CarActivity> {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private ArrayList<CarActivity> cars;
     private ArrayList<Marker> marks = new ArrayList<>();
     private Marker locationMarker;
     private Marker selectedMarker = null;
     private GoogleMap map;
-    private ClusterManager<CarActivity> clusterManager;
     private LocationRequest locationRequest;
     private Location lastLocation;
     private FusedLocationProviderClient fusedProviderClient;
@@ -101,15 +96,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map = googleMap;
 
         if (map != null) {
-            clusterManager = new ClusterManager<>(this, map);
-            clusterManager.setOnClusterClickListener(this);
-            clusterManager.setOnClusterItemClickListener(this);
 
             map.getUiSettings().setZoomControlsEnabled(true);
             map.getUiSettings().setAllGesturesEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
-            map.setOnCameraIdleListener(clusterManager);
-//            map.setOnInfoWindowClickListener(clusterManager);
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng latLng) {
@@ -207,8 +197,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         loadMarkers();
-        clusterManager.cluster();
-        // map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(9.86430, 53.64550), 15));
     }
 
     private void loadMarkers() {
@@ -222,17 +210,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .snippet(car.getAddress()));
             marks.add(carMarker);
             builder.include(loc);
-//            loadCluster(car.getLat(), car.getLon());
         }
         Log.d("MapActivity", "Created " + marks.size() + " marks.");
-
-//        for (Marker m : marks) {
-//            map.addMarker(new MarkerOptions()
-//                    .position(m.getPosition())
-//                    .title(m.getTitle())
-//                    .snippet(m.getSnippet()));
-//            builder.include(m.getPosition());
-//        }
 
         LatLngBounds bounds = builder.build();
 
@@ -241,71 +220,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         int padding = (int) (width * 0.10); // offset from edges of the map 10% of screen
 
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding));
-    }
-
-    private void loadCluster(double lat, double lon) {
-        for (int i = 0; i < 10; i++) {
-            double offset = i / 60d;
-            lat = lat + offset;
-            lon = lon + offset;
-
-            CarActivity offsetItem = new CarActivity(lat, lon);
-            clusterManager.addItem(offsetItem);
-        }
-    }
-
-    private void loadCluster(double lat, double lon, String title, String snippet) {
-        for (int i = 0; i < 10; i++) {
-            double offset = i / 60d;
-            lat = lat + offset;
-            lon = lon + offset;
-
-            CarActivity offsetItem = new CarActivity(lat, lon, title, snippet);
-            clusterManager.addItem(offsetItem);
-        }
-    }
-
-    @Override
-    public boolean onClusterClick(Cluster<CarActivity> cluster) {
-        double minLat = 0;
-        double minLon = 0;
-        double maxLat = 0;
-        double maxLon = 0;
-
-        for (CarActivity car : cluster.getItems()) {
-            double lat = car.getPosition().latitude;
-            double lon = car.getPosition().longitude;
-
-            if (minLat == 0 & minLon == 0 & maxLat == 0 & maxLon == 0) {
-                minLat = maxLat = lat;
-                minLon = maxLon = lon;
-            }
-            if (lat > maxLat) {
-                maxLat = lat;
-            }
-            if (lon > maxLon) {
-                maxLon = lon;
-            }
-            if (lat < minLat) {
-                minLat = lat;
-            }
-            if (lon < minLon) {
-                minLon = lon;
-            }
-        }
-
-        LatLng sw = new LatLng(minLat, minLon);
-        LatLng ne = new LatLng(maxLat, maxLon);
-        LatLngBounds bounds = new LatLngBounds(sw, ne);
-
-        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
-
-        return true;
-    }
-
-    @Override
-    public boolean onClusterItemClick(CarActivity car) {
-        return false;
     }
 
     @Override
