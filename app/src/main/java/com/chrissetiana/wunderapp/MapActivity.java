@@ -2,6 +2,7 @@ package com.chrissetiana.wunderapp;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +37,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +53,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Marker locationMarker;
     private Marker selectedMarker = null;
     private GoogleMap map;
+    private ClusterManager<CarActivity> clusterManager;
+    private CarRenderer carRenderer;
     private LocationRequest locationRequest;
     private Location lastLocation;
     private FusedLocationProviderClient fusedProviderClient;
@@ -96,64 +105,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map = googleMap;
 
         if (map != null) {
+            initLocation();
+            initCluster();
 
             map.getUiSettings().setZoomControlsEnabled(true);
             map.getUiSettings().setAllGesturesEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
-            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            map.getUiSettings().setMapToolbarEnabled(false);
+            map.setOnMapClickListener(latLng -> setItemChecked(null));
+            /*map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng latLng) {
                     selectedMarker = null;
                 }
-            });
-            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker) {
-                    if (marker.equals(selectedMarker)) {
-                        selectedMarker = null;
-
-                        for (Marker m : marks) {
-                            m.setVisible(true);
-                        }
-
-                        return true;
-                    } else {
-                        selectedMarker = marker;
-
-                        for (Marker m : marks) {
-                            if (!m.equals(selectedMarker)) {
-                                m.setVisible(false);
-                            }
-                        }
-
-                        return false;
-                    }
-                }
-            });
-            map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-                @Override
-                public View getInfoWindow(Marker marker) {
-                    return null;
-                }
-
-                @Override
-                public View getInfoContents(Marker marker) {
-                    View view = getLayoutInflater().inflate(R.layout.activity_info, null);
-
-                    TextView carName = view.findViewById(R.id.info_name);
-                    carName.setText(marker.getTitle());
-
-                    TextView carAddress = view.findViewById(R.id.info_address);
-                    carAddress.setText(marker.getSnippet());
-
-                    LatLng loc = marker.getPosition();
-                    TextView carCoordinates = view.findViewById(R.id.info_coordinates);
-                    String location = loc.latitude + ", " + loc.longitude;
-                    carCoordinates.setText(location);
-
-                    return view;
-                }
-            });
+            });*/
             map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
                 @Override
                 public boolean onMyLocationButtonClick() {
@@ -165,61 +130,149 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
 
                     LatLng loc = new LatLng(lat, lon);
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 10));
-
                     locationMarker = map.addMarker(new MarkerOptions()
-                            .position(new LatLng(lat, lon)) // 9.1329843,7.3530768, Abuja
+                            .position(loc)
                             .title("Current Location")
                             .snippet("You are here")
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 5));
                     Log.d("MapActivity", "carMarker created for current " + locationMarker.getPosition());
-
                     return true;
                 }
             });
-
-            locationRequest = new LocationRequest();
-            locationRequest.setInterval(1000);
-            locationRequest.setFastestInterval(1000);
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-            if (ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                checkLocationPermission();
-                return;
-            } else {
-                map.setMyLocationEnabled(true);
-                fusedProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-            }
         }
-
-        loadMarkers();
     }
 
-    private void loadMarkers() {
+    private void setItemChecked(CarActivity carActivity) {
+        CarRenderer carRenderer = (CarRenderer) clusterManager.getRenderer();
+        for (CarActivity car : clusterManager.getAlgorithm().getItems()) {
+            car.setChecked(false);
+
+            if (carActivity != null && car.equals(carActivity)) {
+                carActivity.setChecked(true);
+            }
+            carRenderer.setUpdateMarker(car);
+        }
+    }
+
+    private void initLocation() {
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(1000);
+        locationRequest.setFastestInterval(1000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            checkLocationPermission();
+        } else {
+            map.setMyLocationEnabled(true);
+            fusedProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+        }
+    }
+
+    private void initCluster() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        clusterManager = new ClusterManager<>(this, map);
+        clusterManager.setAlgorithm(new NonHierarchicalDistanceBasedAlgorithm<>());
+
+        carRenderer = new CarRenderer(this, map, clusterManager);
+        clusterManager.setRenderer(carRenderer);
+
+        map.setOnCameraIdleListener(clusterManager);
+        map.setOnMarkerClickListener(clusterManager);
+        map.setOnInfoWindowClickListener(clusterManager);
+
+        clusterManager.setOnClusterClickListener(carRenderer);
+        clusterManager.setOnClusterInfoWindowClickListener(carRenderer);
+        clusterManager.setOnClusterItemClickListener(carRenderer);
+        clusterManager.setOnClusterItemInfoWindowClickListener(carRenderer);
+
+        clusterManager.getMarkerCollection().setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Log.d("MapActivity", marker.getTitle() + " marker clicked from cluster section");
+                if (marker.equals(selectedMarker)) {
+                    selectedMarker = null;
+
+                    for (Marker m : marks) {
+                        m.setVisible(true);
+                    }
+
+                    return true;
+                } else {
+                    selectedMarker = marker;
+
+                    for (Marker m : marks) {
+                        if (!m.equals(selectedMarker)) {
+                            m.setVisible(false);
+                        }
+                    }
+
+                    return false;
+                }
+            }
+        });
+        clusterManager.getClusterMarkerCollection().setOnInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                View view = getLayoutInflater().inflate(R.layout.activity_info, null);
+
+                TextView carName = view.findViewById(R.id.info_name);
+                carName.setText(marker.getTitle());
+
+                TextView carAddress = view.findViewById(R.id.info_address);
+                carAddress.setText(marker.getSnippet());
+
+                LatLng loc = marker.getPosition();
+                TextView carCoordinates = view.findViewById(R.id.info_coordinates);
+                String location = loc.latitude + ", " + loc.longitude;
+                carCoordinates.setText(location);
+
+                return view;
+            }
+        });
+
+//        clusterManager.clearItems();
+        addItems();
+        clusterManager.cluster();
+    }
+
+    private void addItems() {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         for (CarActivity car : cars) {
-            LatLng loc = new LatLng(car.getLat(), car.getLon());
-            Marker carMarker = map.addMarker(new MarkerOptions()
-                    .position(loc)
-                    .title(car.getName())
-                    .snippet(car.getAddress()));
-            marks.add(carMarker);
+            double lat = car.getLat();
+            double lon = car.getLon();
+            LatLng loc = new LatLng(lat, lon);
+            String name = car.getName();
+            String address = car.getAddress();
+
+            CarActivity items = new CarActivity(loc, name, address);
+            Log.d("MapActivity", "car: " + items.size());
+//            clusterManager.removeItem(item);
+            clusterManager.addItem(items);
             builder.include(loc);
         }
-        Log.d("MapActivity", "Created " + marks.size() + " marks.");
+
+        clusterManager.cluster();
 
         LatLngBounds bounds = builder.build();
 
         int width = getResources().getDisplayMetrics().widthPixels;
         int height = getResources().getDisplayMetrics().heightPixels;
-        int padding = (int) (width * 0.10); // offset from edges of the map 10% of screen
+        int padding = (int) (width * 0.40);
 
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding));
+//        map.moveCamera((CameraUpdateFactory.newLatLngBounds(bounds, 1)));
     }
 
     @Override
@@ -310,6 +363,109 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (fusedProviderClient != null) {
             fusedProviderClient.removeLocationUpdates(locationCallback);
+        }
+    }
+
+    class CarRenderer extends DefaultClusterRenderer<CarActivity> implements
+            ClusterManager.OnClusterClickListener<CarActivity>,
+            ClusterManager.OnClusterInfoWindowClickListener<CarActivity>,
+            ClusterManager.OnClusterItemClickListener<CarActivity>,
+            ClusterManager.OnClusterItemInfoWindowClickListener<CarActivity> {
+
+        private CarRenderer(Context context, GoogleMap map, ClusterManager<CarActivity> clusterManager) {
+            super(context, map, clusterManager);
+            setOnClusterClickListener(this);
+            setOnClusterInfoWindowClickListener(this);
+            setOnClusterItemClickListener(this);
+            setOnClusterItemInfoWindowClickListener(this);
+        }
+
+        void setUpdateMarker(CarActivity carActivity) {
+            Marker marker = getMarker(carActivity);
+
+            if (marker != null) {
+                Log.d("MapActivity", "marker is null!");
+            }
+        }
+
+        @Override
+        protected boolean shouldRenderAsCluster(Cluster<CarActivity> cluster) {
+            boolean isit = cluster.getSize() > 1;
+            Log.d("MapActivity", "Should render as cluster: " + isit + ", cluster size: " + cluster.getSize());
+            return cluster.getSize() > 1;
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(CarActivity item, MarkerOptions markerOptions) {
+            // for each marker
+            markerOptions.title(item.getTitle());
+            markerOptions.snippet(item.getSnippet());
+
+            // copy map code for marker click here
+
+            super.onBeforeClusterItemRendered(item, markerOptions);
+            Log.d("MapActivity", "Before cluster item rendered");
+        }
+
+        @Override
+        protected void onClusterItemRendered(CarActivity car, Marker marker) {
+            // get map.onMarkerClick code and place it here
+            super.onClusterItemRendered(car, marker);
+            Log.d("MapActivity", "Cluster item rendered " + marker.getTitle());
+        }
+
+        @Override
+        protected void onClusterRendered(Cluster<CarActivity> cluster, Marker marker) {
+            super.onClusterRendered(cluster, marker);
+            Log.d("MapActivity", "Cluster rendered " + marker.getTitle());
+        }
+
+        @Override
+        protected void onBeforeClusterRendered(Cluster<CarActivity> cluster, MarkerOptions options) {
+            // for each cluster
+            super.onBeforeClusterRendered(cluster, options);
+            Log.d("MapActivity", "Before cluster rendered; size " + cluster.getSize());
+        }
+
+        @Override
+        public boolean onClusterClick(Cluster<CarActivity> cluster) {
+            Log.d("MapActivity", " cluster click");
+
+            LatLngBounds.Builder builder = LatLngBounds.builder();
+
+            for (ClusterItem item : cluster.getItems()) {
+                builder.include(item.getPosition());
+            }
+
+            LatLngBounds bounds = builder.build();
+
+            int width = getResources().getDisplayMetrics().widthPixels;
+            int height = getResources().getDisplayMetrics().heightPixels;
+            int padding = (int) (width * 0.10);
+
+            // map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding));
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 1));
+            return true;
+        }
+
+        @Override
+        public void onClusterInfoWindowClick(Cluster<CarActivity> cluster) {
+            Log.d("MapActivity", " cluster info window click");
+        }
+
+        @Override
+        public boolean onClusterItemClick(CarActivity carActivity) {
+            // this will not work because of the marker click meth inside cluster
+            // when you click a marker
+            Log.d("MapActivity", carActivity.getTitle() + " cluster item click");
+            setItemChecked(carActivity);
+            return true;
+        }
+
+        @Override
+        public void onClusterItemInfoWindowClick(CarActivity carActivity) {
+            // when you click a marker's info window
+            Log.d("MapActivity", carActivity.getName() + " cluster item info window click");
         }
     }
 }

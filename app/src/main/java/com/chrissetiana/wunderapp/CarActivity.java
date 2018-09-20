@@ -2,13 +2,14 @@ package com.chrissetiana.wunderapp;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.Checkable;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
 import java.util.ArrayList;
 
-class CarActivity extends ArrayList<CarActivity> implements Parcelable, ClusterItem {
+class CarActivity extends ArrayList<CarActivity> implements Parcelable, ClusterItem, Checkable {
 
     public static final Creator<CarActivity> CREATOR = new Creator<CarActivity>() {
         @Override
@@ -30,7 +31,7 @@ class CarActivity extends ArrayList<CarActivity> implements Parcelable, ClusterI
     private String address;
     private double lat;
     private double lon;
-    private LatLng location;
+    private LatLng loc;
 
     CarActivity(String name, String vin, String engine, String fuel, String exterior, String interior, String address, double lat, double lon) {
         setName(name);
@@ -45,9 +46,9 @@ class CarActivity extends ArrayList<CarActivity> implements Parcelable, ClusterI
     }
 
     CarActivity(LatLng loc, String title, String snippet) {
-        location = loc;
-        name = title;
-        address = snippet;
+        setLoc(loc);
+        setName(title);
+        setAddress(snippet);
     }
 
     private CarActivity(Parcel parcel) {
@@ -72,7 +73,7 @@ class CarActivity extends ArrayList<CarActivity> implements Parcelable, ClusterI
 
     @Override
     public LatLng getPosition() {
-        return location;
+        return loc;
     }
 
     @Override
@@ -83,6 +84,21 @@ class CarActivity extends ArrayList<CarActivity> implements Parcelable, ClusterI
     @Override
     public String getSnippet() {
         return address;
+    }
+
+    @Override
+    public boolean isChecked() {
+        return false;
+    }
+
+    @Override
+    public void setChecked(boolean checked) {
+
+    }
+
+    @Override
+    public void toggle() {
+
     }
 
     public String getName() {
@@ -155,5 +171,13 @@ class CarActivity extends ArrayList<CarActivity> implements Parcelable, ClusterI
 
     private void setLon(double lon) {
         this.lon = lon;
+    }
+
+    public LatLng getLoc() {
+        return loc;
+    }
+
+    private void setLoc(LatLng location) {
+        this.loc = location;
     }
 }
